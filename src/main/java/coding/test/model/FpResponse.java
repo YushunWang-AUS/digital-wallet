@@ -1,6 +1,7 @@
 package coding.test.model;
 
 public class FpResponse {
+
     private Boolean success;
     private Object result;
 

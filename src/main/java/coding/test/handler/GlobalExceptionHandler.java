@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.ArrayList;
 import java.util.List;
 
-@Log4j2
 @RestControllerAdvice
 class GlobalExceptionHandler {
 

@@ -4,7 +4,7 @@ import coding.test.model.FpError;
 
 public class FpException extends Exception {
 
-    private String code;
+    private String code = "internal.error";
     private String message;
 
     public FpException(String message) {

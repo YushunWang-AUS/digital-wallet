@@ -1,4 +1,4 @@
-package coding.test.controller.service;
+package coding.test.service;
 
 import coding.test.controller.dao.UserDAO;
 import coding.test.controller.dao.WalletAccountDAO;
