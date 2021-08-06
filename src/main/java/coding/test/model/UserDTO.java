@@ -1,13 +1,14 @@
 package coding.test.model;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotBlank;
 
-@Validated
+@Component
 public class UserDTO {
 
     @Id
