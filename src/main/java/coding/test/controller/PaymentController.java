@@ -29,7 +29,7 @@ public class PaymentController {
 
     @Transactional
     @PostMapping("/notification")
-    public FpResponseDTO paymentNotification(@Valid @RequestBody PaymentNotificationDTO paymentNotificationDTO) throws FpException {
+    public FpResponseDTO paymentNotification(@Valid @RequestBody PaymentNotificationDTO paymentNotificationDTO) {
 
         // Get Wallet Account. If it doesn't exist, it will create a new one here.
         WalletCreditTransactionDTO transactionDTO = paymentNotificationDTO.getTransactions();

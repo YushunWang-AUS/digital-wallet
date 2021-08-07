@@ -8,6 +8,8 @@ import coding.test.model.WalletAccountDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 public class UserService {
 
@@ -22,9 +24,8 @@ public class UserService {
      *
      * @param userReference user_id in the API request
      * @return WalletAccountDTO: Wallet Account Details
-     * @throws FpException
      */
-    public WalletAccountDTO getWalletAccount(String userReference) throws FpException {
+    public WalletAccountDTO getWalletAccount(String userReference) {
         UserDTO user = userDAO.findByUserReference(userReference);
         if (user == null) {
             throw new FpException(String.format("User doesn't exist. userReference:%s", userReference));
@@ -37,6 +38,15 @@ public class UserService {
         }
 
         return walletAccount;
+    }
+
+    public Map getWalletAccountDetails(String userReference) {
+        Map details = walletAccountDAO.findByUserReference(userReference);
+        if (details == null) {
+            throw new FpException(String.format("Wallet account doesn't exist. userReference:%s", userReference));
+        }
+
+        return details;
     }
 
 

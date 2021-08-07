@@ -11,6 +11,8 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.util.Map;
+
 @Repository
 public class WalletAccountDAO {
 
@@ -22,12 +24,30 @@ public class WalletAccountDAO {
     public WalletAccountDTO findByUserId(Long userId) {
 
         try {
-            String sql = "SELECT id FROM wallet_account WHERE user_id=:userId AND enabled=true";
+            String sql = "SELECT id, user_id AS 'userId', created_at AS 'createdAt', enabled FROM wallet_account WHERE user_id=:userId AND enabled=true";
             MapSqlParameterSource params = new MapSqlParameterSource();
             params.addValue("userId", userId);
             return jdbc.queryForObject(sql, params, new BeanPropertyRowMapper<>(WalletAccountDTO.class));
         } catch (EmptyResultDataAccessException e) {
             log.warn(String.format("WalletAccount doesn't exist. userId:%s", userId));
+            return null;
+        }
+
+    }
+
+    public Map findByUserReference(String userReference) {
+
+        try {
+            String sql = "SELECT wc.id AS 'walletAccountId', user_id AS 'userId', created_at AS 'createdAt'," +
+                    " user_reference AS 'userReference', u.first_name AS 'firstName', u.last_name AS 'lastName', u.email, u.username" +
+                    " FROM wallet_account wc" +
+                    " INNER JOIN user u ON wc.user_id = u.id AND wc.enabled=true" +
+                    " WHERE user_reference=:userReference AND u.enabled=true";
+            MapSqlParameterSource params = new MapSqlParameterSource();
+            params.addValue("userReference", userReference);
+            return jdbc.queryForMap(sql, params);
+        } catch (EmptyResultDataAccessException e) {
+            log.warn(String.format("WalletAccount doesn't exist. userReference:%s", userReference));
             return null;
         }
 
