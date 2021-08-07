@@ -17,6 +17,13 @@ public class UserService {
     @Autowired
     WalletAccountDAO walletAccountDAO;
 
+    /**
+     * Get Wallet Account. If it doesn't exist, it will create a new one here.
+     *
+     * @param userReference user_id in the API request
+     * @return WalletAccountDTO: Wallet Account Details
+     * @throws FpException
+     */
     public WalletAccountDTO getWalletAccount(String userReference) throws FpException {
         UserDTO user = userDAO.findByUserReference(userReference);
         if (user == null) {

@@ -35,7 +35,7 @@ public class WalletAccountDAO {
 
     public Long create(WalletAccountDTO walletAccount) {
 
-        String sql = "INSERT INTO wallet_account (user_id, enabled, date_created) VALUES (:userId, true, NOW())";
+        String sql = "INSERT INTO wallet_account (user_id, enabled, created_at) VALUES (:userId, true, NOW())";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("userId", walletAccount.getUserId());
 

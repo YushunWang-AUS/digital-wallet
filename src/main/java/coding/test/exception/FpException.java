@@ -2,7 +2,7 @@ package coding.test.exception;
 
 import coding.test.model.FpErrorDTO;
 
-public class FpException extends Exception {
+public class FpException extends RuntimeException {
 
     private String code = "internal.error";
     private String message;

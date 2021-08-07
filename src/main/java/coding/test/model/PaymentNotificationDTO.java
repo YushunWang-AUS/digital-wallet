@@ -2,13 +2,13 @@ package coding.test.model;
 
 public class PaymentNotificationDTO {
 
-    private TransactionDTO transactions;
+    private WalletCreditTransactionDTO transactions;
 
-    public TransactionDTO getTransactions() {
+    public WalletCreditTransactionDTO getTransactions() {
         return transactions;
     }
 
-    public void setTransactions(TransactionDTO transactions) {
+    public void setTransactions(WalletCreditTransactionDTO transactions) {
         this.transactions = transactions;
     }
 }

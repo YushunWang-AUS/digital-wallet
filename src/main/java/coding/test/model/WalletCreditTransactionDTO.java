@@ -1,25 +1,33 @@
 package coding.test.model;
 
-import coding.test.enums.PaymentType;
+import coding.test.annotation.ValueOfEnum;
+import coding.test.enums.AccountType;
 import coding.test.enums.TransactionType;
-import com.alibaba.fastjson.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public class TransactionDTO {
+public class WalletCreditTransactionDTO {
 
-    @NotNull
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
+
+    @NotBlank
     @JsonProperty(value = "id")
     private String transactionReference;
 
-    @NotNull
+    @NotEmpty
     @JsonProperty(value = "user_id")
     private String userReference;
+
+    private Long walletAccountId;
 
     @NotNull
     @JsonProperty(value = "created_at")
@@ -31,22 +39,22 @@ public class TransactionDTO {
 
     private String description;
 
-    @NotNull
     @JsonProperty(value = "type")
-    private PaymentType paymentType;
+    private TransactionType transactionType;
 
+    @NotEmpty
     @JsonProperty(value = "type_method")
     private String method;
 
     @NotNull
     @JsonProperty(value = "debit_credit")
-    private TransactionType transactionType;
+    private AccountType accountType;
 
     private String currency;
 
     @NotNull
     @Min(value = 0)
-    BigDecimal amount;  // Dollars, need to covert to cents when persistent
+    Long amount;  // Dollars, need to covert to cents when persistent
 
     public String getTransactionReference() {
         return transactionReference;
@@ -62,6 +70,14 @@ public class TransactionDTO {
 
     public void setUserReference(String userReference) {
         this.userReference = userReference;
+    }
+
+    public Long getWalletAccountId() {
+        return walletAccountId;
+    }
+
+    public void setWalletAccountId(Long walletAccountId) {
+        this.walletAccountId = walletAccountId;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -88,12 +104,12 @@ public class TransactionDTO {
         this.description = description;
     }
 
-    public PaymentType getPaymentType() {
-        return paymentType;
+    public TransactionType getTransactionType() {
+        return transactionType;
     }
 
-    public void setPaymentType(PaymentType paymentType) {
-        this.paymentType = paymentType;
+    public void setTransactionType(TransactionType transactionType) {
+        this.transactionType = transactionType;
     }
 
     public String getMethod() {
@@ -104,12 +120,12 @@ public class TransactionDTO {
         this.method = method;
     }
 
-    public TransactionType getTransactionType() {
-        return transactionType;
+    public AccountType getAccountType() {
+        return accountType;
     }
 
-    public void setTransactionType(TransactionType transactionType) {
-        this.transactionType = transactionType;
+    public void setAccountType(AccountType accountType) {
+        this.accountType = accountType;
     }
 
     public String getCurrency() {
@@ -120,17 +136,8 @@ public class TransactionDTO {
         this.currency = currency;
     }
 
-    public BigDecimal getAmount() {
+    public Long getAmount() {
         return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
-
-    @JsonAnySetter
-    public void setPaymentType(String type) {
-        this.paymentType = PaymentType.valueOf(type.toUpperCase());
     }
 
     @JsonAnySetter
@@ -138,17 +145,28 @@ public class TransactionDTO {
         this.transactionType = TransactionType.valueOf(transactionType.toUpperCase());
     }
 
+    @JsonAnySetter
+    public void setAccountType(String accountType) {
+        this.accountType = AccountType.valueOf(accountType.toUpperCase());
+    }
+
+    @JsonAnySetter
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount.multiply(new BigDecimal(100)).longValue();
+    }
+
     @Override
     public String toString() {
-        return "TransactionDTO{" +
+        return "WalletCreditTransactionDTO{" +
                 "transactionReference='" + transactionReference + '\'' +
                 ", userReference='" + userReference + '\'' +
+                ", walletAccountId=" + walletAccountId +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 ", description='" + description + '\'' +
-                ", paymentType=" + paymentType +
-                ", method='" + method + '\'' +
                 ", transactionType=" + transactionType +
+                ", method='" + method + '\'' +
+                ", accountType=" + accountType +
                 ", currency='" + currency + '\'' +
                 ", amount=" + amount +
                 '}';
