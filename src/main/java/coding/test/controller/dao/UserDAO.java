@@ -26,7 +26,6 @@ public class UserDAO {
             params.addValue("id", id);
             return jdbc.queryForObject(sql, params, new BeanPropertyRowMapper<>(UserDTO.class));
         } catch (EmptyResultDataAccessException e) {
-            log.warn(String.format("User doesn't exist. userId:%s", id));
             return null;
         }
 

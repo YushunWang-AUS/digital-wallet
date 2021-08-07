@@ -1,4 +1,10 @@
+SET FOREIGN_KEY_CHECKS = 0;
+
 -- fp_db.`user` definition
+DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS wallet_account;
+DROP TABLE IF EXISTS wallet_credit_transaction;
+DROP VIEW IF EXISTS view_wallet_credit_transaction_summary;
 
 CREATE TABLE `user`
 (
@@ -13,7 +19,6 @@ CREATE TABLE `user`
 );
 
 -- fp_db.wallet_account definition
-
 CREATE TABLE `wallet_account`
 (
     `id`         bigint(20) NOT NULL AUTO_INCREMENT,
@@ -42,3 +47,31 @@ CREATE TABLE `wallet_credit_transaction`
     PRIMARY KEY (`id`),
     CONSTRAINT `wallet_credit_transaction_fk1` FOREIGN KEY (`wallet_account_id`) REFERENCES `wallet_account` (`id`)
 );
+
+CREATE VIEW view_wallet_credit_transaction_summary AS
+(
+SELECT credit.user_id,
+       credit.user_reference,
+       IFNULL(credit.total_credit, 0)                                  AS 'total_credit',
+       IFNULL(debit.total_debit, 0)                                    AS 'total_debit',
+       (IFNULL(credit.total_credit, 0) - IFNULL(debit.total_debit, 0)) AS 'balance'
+FROM (
+         SELECT u.id AS 'user_id', u.user_reference, SUM(wct.amount) AS 'total_credit'
+         FROM wallet_credit_transaction wct
+                  INNER JOIN wallet_account wc ON wct.wallet_account_id = wc.id AND wc.enabled = true
+                  INNER JOIN user u ON wc.user_id = u.id AND u.enabled = true
+         WHERE wct.account_type = 'CREDIT'
+         GROUP BY u.id
+     ) AS credit
+         LEFT JOIN
+     (
+         SELECT u.id AS 'user_id', u.user_reference, SUM(wct.amount) AS 'total_debit'
+         FROM wallet_credit_transaction wct
+                  INNER JOIN wallet_account wc ON wct.wallet_account_id = wc.id AND wc.enabled = true
+                  INNER JOIN user u ON wc.user_id = u.id AND u.enabled = true
+         WHERE wct.account_type = 'DEBIT'
+         GROUP BY u.id
+     ) AS debit
+     ON credit.user_id = debit.user_id
+    );
+SET FOREIGN_KEY_CHECKS = 1;
