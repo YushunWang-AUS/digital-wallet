@@ -41,7 +41,7 @@ public class LoggingService {
 
             log.info(stringBuilder.toString());
         } catch (JsonProcessingException e) {
-            log.warn("Parse json request body failed");
+            log.warn("Parse json request body failed. reason:" + e.getMessage());
         }
     }
 
@@ -60,7 +60,7 @@ public class LoggingService {
             stringBuilder.append("\n" + SEPARATOR);
             log.info(stringBuilder.toString());
         } catch (JsonProcessingException e) {
-            log.warn("Parse json request body failed");
+            log.warn("Parse json request body failed. reason:" + e.getMessage());
         }
     }
 

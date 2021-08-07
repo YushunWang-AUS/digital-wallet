@@ -27,7 +27,7 @@ public class PaymentController {
     @Autowired
     PaymentService paymentService;
 
-    @Transactional
+//    @Transactional
     @PostMapping("/notification")
     public FpResponseDTO paymentNotification(@Valid @RequestBody PaymentNotificationDTO paymentNotificationDTO) {
 

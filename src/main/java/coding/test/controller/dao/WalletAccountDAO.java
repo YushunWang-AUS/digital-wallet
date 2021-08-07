@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.util.Map;
@@ -59,9 +60,11 @@ public class WalletAccountDAO {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("userId", walletAccount.getUserId());
 
-        Integer id = jdbc.update(sql, params, new GeneratedKeyHolder());
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbc.update(sql, params, keyHolder);
+        Long id = keyHolder.getKey().longValue();
         log.info(String.format("WalletAccount created. id: %s, userId:%s", id, walletAccount.getUserId()));
-        return id.longValue();
+        return id;
 
     }
 }
