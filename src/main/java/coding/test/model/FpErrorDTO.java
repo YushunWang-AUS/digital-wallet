@@ -1,6 +1,7 @@
 package coding.test.model;
 
-public class FpError {
+public class FpErrorDTO {
+
     private String code;
     private String message;
 

@@ -1,6 +1,6 @@
 package coding.test.model;
 
-public class FpResponse {
+public class FpResponseDTO {
 
     private Boolean success;
     private Object result;

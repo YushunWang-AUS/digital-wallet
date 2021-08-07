@@ -1,6 +1,6 @@
 package coding.test.exception;
 
-import coding.test.model.FpError;
+import coding.test.model.FpErrorDTO;
 
 public class FpException extends Exception {
 
@@ -11,7 +11,7 @@ public class FpException extends Exception {
         this.message = message;
     }
 
-    public FpException(FpError fpError) {
+    public FpException(FpErrorDTO fpError) {
         this.code = fpError.getCode();
         this.message = fpError.getMessage();
     }

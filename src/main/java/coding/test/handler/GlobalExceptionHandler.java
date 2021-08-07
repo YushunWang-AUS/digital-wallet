@@ -1,10 +1,9 @@
 package coding.test.handler;
 
 import coding.test.exception.FpException;
-import coding.test.model.FpError;
-import coding.test.model.FpResponse;
-import coding.test.model.ResponseResult;
-import lombok.extern.log4j.Log4j2;
+import coding.test.model.FpErrorDTO;
+import coding.test.model.FpResponseDTO;
+import coding.test.model.FpResponseResultDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -23,36 +22,36 @@ class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    FpResponse handleValidationExceptions(MethodArgumentNotValidException ex) {
-        List<FpError> errors = new ArrayList<>();
+    FpResponseDTO handleValidationExceptions(MethodArgumentNotValidException ex) {
+        List<FpErrorDTO> errors = new ArrayList<>();
         ex.getBindingResult().getFieldErrors().forEach(fieldError -> {
             String fieldName = fieldError.getField();
-            FpError fpError = new FpError();
+            FpErrorDTO fpError = new FpErrorDTO();
             fpError.setCode(fieldName + ".invalid");
             fpError.setMessage(fieldName + " " + fieldError.getDefaultMessage());
             errors.add(fpError);
         });
-        return ResponseResult.fail(errors);
+        return FpResponseResultDTO.fail(errors);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(FpException.class)
-    FpResponse handleFpException(FpException ex) {
+    FpResponseDTO handleFpException(FpException ex) {
         log.error(ex.getMessage());
-        FpError fpError = new FpError();
+        FpErrorDTO fpError = new FpErrorDTO();
         fpError.setCode(ex.getCode());
         fpError.setMessage(ex.getMessage());
-        return ResponseResult.fail(fpError);
+        return FpResponseResultDTO.fail(fpError);
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
-    FpResponse handleExceptions(Exception ex) {
+    FpResponseDTO handleExceptions(Exception ex) {
         ex.printStackTrace();
-        FpError fpError = new FpError();
+        FpErrorDTO fpError = new FpErrorDTO();
         fpError.setCode("internal.error");
         fpError.setMessage(ex.getMessage());
-        return ResponseResult.fail(fpError);
+        return FpResponseResultDTO.fail(fpError);
     }
 }
 

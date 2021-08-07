@@ -17,17 +17,19 @@ public class UserService {
     @Autowired
     WalletAccountDAO walletAccountDAO;
 
-    public WalletAccountDAO getWalletAccount(Long userId) throws FpException {
-        UserDTO user = userDAO.find(userId);
+    public WalletAccountDTO getWalletAccount(String userReference) throws FpException {
+        UserDTO user = userDAO.findByUserReference(userReference);
         if (user == null) {
-            throw new FpException(String.format("User doesn't exist. userId:%s", userId));
+            throw new FpException(String.format("User doesn't exist. userReference:%s", userReference));
         }
-        WalletAccountDTO walletAccount = walletAccountDAO.findByUserId(userId);
+        WalletAccountDTO walletAccount = walletAccountDAO.findByUserId(user.getId());
         if (walletAccount == null) {
-
+            walletAccount = new WalletAccountDTO();
+            walletAccount.setUserId(user.getId());
+            walletAccountDAO.create(walletAccount);
         }
 
-        return null;
+        return walletAccount;
     }
 
 
