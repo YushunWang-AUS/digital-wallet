@@ -3,7 +3,10 @@ package coding.test.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.stereotype.Component;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Component
 public class UserDTO {
@@ -15,15 +18,15 @@ public class UserDTO {
     private String userReference;
 
     @NotBlank
-    @Size(min = 1, max = 64)
+    @Size(max = 64)
     private String firstName;
 
     @NotBlank
-    @Size(min = 1, max = 64)
+    @Size(max = 64)
     private String lastName;
 
     @Email
-    @Size(min = 3, max = 64)
+    @Size(max = 64)
     private String email;
 
     private Boolean enabled;

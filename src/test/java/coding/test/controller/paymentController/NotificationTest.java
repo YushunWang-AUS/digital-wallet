@@ -20,13 +20,13 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@Sql(value = {"../../../../cleanDB.sql", "../../../../init_data.sql"})
+@Sql(value = {"../../../../cleanDB.sql", "../../../../noWalletAccount.sql"})
 @AutoConfigureMockMvc
 @SpringBootTest
 public class NotificationTest {
 
     /*TODO: 1. each API field null,EMPTY,BLANK value check
-            2. each API field min/max/over-max length check
+            2. each API field min/max/over-size length check
             3. date/email format check
             4. enum field value check (type, debit_credit)
             5. user doesn't exist check
