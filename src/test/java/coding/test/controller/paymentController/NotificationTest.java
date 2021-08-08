@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.jdbc.Sql;
@@ -42,6 +43,7 @@ public class NotificationTest {
     private MvcResult performTest(String reqBody) throws Exception {
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post(ENDPOINT)
                 .content(reqBody)
+                .header(HttpHeaders.AUTHORIZATION, "HMAC_SHA256 7252322798a42f4005596e78ab602e300acf51c13628bb4bff6b5aa929cadec4")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn();
@@ -166,5 +168,27 @@ public class NotificationTest {
         assertEquals("internal.error", ((Map) ((List) responseDTO.getResult()).get(0)).get("code"));
         assertEquals("Transaction [49f1cb10-0202-0138-225b-028e897a70a1] already exists.", ((Map) ((List) responseDTO.getResult()).get(0)).get("message"));
 
+    }
+
+
+    @DisplayName("No authorisation")
+    @Test
+    public void test90002() throws Exception {
+        PaymentNotificationTestDTO dto = new PaymentNotificationTestDTO();
+        String reqBody = new ObjectMapper().writeValueAsString(dto);
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post(ENDPOINT)
+                .content(reqBody)
+                .header(HttpHeaders.AUTHORIZATION, "HMAC_SHA256 aaaa-1111-bbbb")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        MockHttpServletResponse response = result.getResponse();
+        String body = result.getResponse().getContentAsString();
+        FpResponseDTO responseDTO = mapper.readValue(body, FpResponseDTO.class);
+        assertEquals(401, response.getStatus());
+        assertEquals(false, responseDTO.getSuccess());
+        assertEquals("no.authorisation", ((Map) ((List) responseDTO.getResult()).get(0)).get("code"));
+        assertEquals("Sorry, you are not authorized", ((Map) ((List) responseDTO.getResult()).get(0)).get("message"));
     }
 }

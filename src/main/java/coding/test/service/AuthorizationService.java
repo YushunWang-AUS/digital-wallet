@@ -13,7 +13,6 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.List;
 
 @Service
 public class AuthorizationService {
@@ -30,7 +29,7 @@ public class AuthorizationService {
 
 
     public boolean isValidationTarget(HttpServletRequest httpRequest, String resourcePath) {
-        if(AUTH_REQ_ACTION==null || AUTH_REQ_ACTION.length()==0) return false;
+        if (AUTH_REQ_ACTION == null || AUTH_REQ_ACTION.length() == 0) return false;
         String[] actions = AUTH_REQ_ACTION.split(",");
 
         // TODO: will support * masked path later
@@ -41,9 +40,12 @@ public class AuthorizationService {
     }
 
     public boolean validateToken(HttpServletRequest request) {
+        String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (!StringUtils.hasText(auth)) return false;
+
         String token = request.getHeader(HttpHeaders.AUTHORIZATION).replaceFirst(HMAC_SHA256, "").trim();
         log.info(String.format("Get token: %s", token));
-        if(!StringUtils.hasText(token)) return false;
+        if (!StringUtils.hasText(token)) return false;
 
         try {
             // TODO: hmac_value should be calculated by some value here, eg. using partnerCode "alibaba"
@@ -53,7 +55,7 @@ public class AuthorizationService {
 
             // TODO: use given hashedValue as the coding test
             hashedValue = "7252322798a42f4005596e78ab602e300acf51c13628bb4bff6b5aa929cadec4";
-            if(token.equals(hashedValue)) return true;
+            if (token.equals(hashedValue)) return true;
         } catch (Exception e) {
             e.printStackTrace();
             log.error(String.format("Calculate token failed. token:%s", token));
