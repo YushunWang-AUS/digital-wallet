@@ -1,6 +1,7 @@
 package coding.test.handler;
 
 import coding.test.exception.FpException;
+import coding.test.exception.FpNoAuthorisedException;
 import coding.test.model.FpErrorDTO;
 import coding.test.model.FpResponseDTO;
 import coding.test.model.FpResponseResultDTO;
@@ -38,20 +39,20 @@ class GlobalExceptionHandler {
     @ExceptionHandler(FpException.class)
     FpResponseDTO handleFpException(FpException ex) {
         log.error(ex.getMessage());
-        FpErrorDTO fpError = new FpErrorDTO();
-        fpError.setCode(ex.getCode());
-        fpError.setMessage(ex.getMessage());
-        return FpResponseResultDTO.fail(fpError);
+        return FpResponseResultDTO.fail(new FpErrorDTO(ex));
+    }
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(FpNoAuthorisedException.class)
+    FpResponseDTO handleFpNoAuthorisedException(FpNoAuthorisedException ex) {
+        return FpResponseResultDTO.fail(new FpErrorDTO(ex));
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     FpResponseDTO handleExceptions(Exception ex) {
         ex.printStackTrace();
-        FpErrorDTO fpError = new FpErrorDTO();
-        fpError.setCode("internal.error");
-        fpError.setMessage(ex.getMessage());
-        return FpResponseResultDTO.fail(fpError);
+        return FpResponseResultDTO.fail(new FpErrorDTO("internal.error", ex.getMessage()));
     }
 }
 
