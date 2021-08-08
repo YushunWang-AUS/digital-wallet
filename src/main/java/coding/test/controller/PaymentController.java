@@ -31,13 +31,13 @@ public class PaymentController {
     @PostMapping("/notification")
     public FpResponseDTO paymentNotification(@Valid @RequestBody PaymentNotificationDTO paymentNotificationDTO) {
 
-        // Get Wallet Account. If it doesn't exist, it will create a new one here.
-        WalletCreditTransactionDTO transactionDTO = paymentNotificationDTO.getTransactions();
-        WalletAccountDTO walletAccountDTO = userService.getWalletAccount(transactionDTO.getUserReference());
+        TransactionDTO transactionDTO = paymentNotificationDTO.getTransactions();
 
-        // Set wallet account id for the transaction.
-        WalletCreditTransactionDTO walletCreditTransactionDTO = paymentNotificationDTO.getTransactions();
-        walletCreditTransactionDTO.setWalletAccountId(walletAccountDTO.getId());
+        // Get Wallet Account. If it doesn't exist, it will create a new one here.
+        WalletAccountDTO walletAccountDTO = userService.getWalletAccount(transactionDTO.getUser_id());
+
+        // create walletCreditTransactionDTO.
+        WalletCreditTransactionDTO walletCreditTransactionDTO = new WalletCreditTransactionDTO(transactionDTO, walletAccountDTO.getId());
 
         // Check Transaction Reference (TransactionId in API Request) Duplicated
         String transactionReference = walletCreditTransactionDTO.getTransactionReference();
@@ -47,7 +47,7 @@ public class PaymentController {
         }
 
         // Create Transaction data in database
-        paymentService.createTransaction(paymentNotificationDTO.getTransactions());
+        paymentService.createTransaction(walletCreditTransactionDTO);
 
         return FpResponseResultDTO.success();
     }

@@ -2,12 +2,6 @@ package coding.test.model;
 
 import coding.test.enums.AccountType;
 import coding.test.enums.TransactionType;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,46 +9,48 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class WalletCreditTransactionDTO {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
+    public WalletCreditTransactionDTO(TransactionDTO transactionDTO, Long walletAccountId) {
+        this.walletAccountId = walletAccountId;
+        this.transactionReference = transactionDTO.getId();
+        this.userReference = transactionDTO.getUser_id();
+        this.updatedAt = transactionDTO.getUpdatedAt();
+        this.createdAt = transactionDTO.getCreatedAt();
+        this.description = transactionDTO.getDescription();
+        this.method = transactionDTO.getType_method();
+        this.transactionType = transactionDTO.getType();
+        this.accountType = transactionDTO.getDebit_credit();
+        this.currency = transactionDTO.getCurrency();
+        this.amount = transactionDTO.getAmount();
+    }
+
     @NotBlank
-    @JsonProperty(value = "id")
     private String transactionReference;
 
     @NotBlank
-    @JsonProperty(value = "user_id")
     private String userReference;
 
     private Long walletAccountId;
 
     @NotNull
-    @JsonProperty(value = "created_at")
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime createdAt;
 
     @NotNull
-    @JsonProperty(value = "updated_at")
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime updatedAt;
 
     private String description;
 
-    @JsonProperty(value = "type")
     private TransactionType transactionType;
 
     @NotEmpty
-    @JsonProperty(value = "type_method")
     private String method;
 
     @NotNull
-    @JsonProperty(value = "debit_credit")
     private AccountType accountType;
 
     private String currency;
@@ -145,37 +141,5 @@ public class WalletCreditTransactionDTO {
 
     public Long getAmount() {
         return amount;
-    }
-
-    @JsonAnySetter
-    public void setTransactionType(String transactionType) {
-        this.transactionType = TransactionType.valueOf(transactionType.toUpperCase());
-    }
-
-    @JsonAnySetter
-    public void setAccountType(String accountType) {
-        this.accountType = AccountType.valueOf(accountType.toUpperCase());
-    }
-
-    @JsonAnySetter
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount.multiply(new BigDecimal(100)).longValue();
-    }
-
-    @Override
-    public String toString() {
-        return "WalletCreditTransactionDTO{" +
-                "transactionReference='" + transactionReference + '\'' +
-                ", userReference='" + userReference + '\'' +
-                ", walletAccountId=" + walletAccountId +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", description='" + description + '\'' +
-                ", transactionType=" + transactionType +
-                ", method='" + method + '\'' +
-                ", accountType=" + accountType +
-                ", currency='" + currency + '\'' +
-                ", amount=" + amount +
-                '}';
     }
 }

@@ -35,24 +35,24 @@ public class WalletCreditTransactionDAO {
 
     }
 
-    public Long create(WalletCreditTransactionDTO transactionDTO) {
+    public Long create(WalletCreditTransactionDTO dto) {
 
         String sql = "INSERT INTO wallet_credit_transaction (transaction_reference, wallet_account_id, amount, currency, transaction_type, method, account_type, description, created_at, updated_at) " +
                 "VALUES (:transactionReference, :walletAccountId, :amount, :currency, :transactionType, :method, :accountType, :description, :createdAt, :updatedAt)";
         MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("transactionReference", transactionDTO.getTransactionReference())
-                .addValue("walletAccountId", transactionDTO.getWalletAccountId())
-                .addValue("amount", transactionDTO.getAmount())
-                .addValue("currency", transactionDTO.getCurrency())
-                .addValue("transactionType", transactionDTO.getTransactionType().name())
-                .addValue("method", transactionDTO.getMethod())
-                .addValue("accountType", transactionDTO.getAccountType().name())
-                .addValue("description", transactionDTO.getDescription())
-                .addValue("createdAt", transactionDTO.getCreatedAt())
-                .addValue("updatedAt", transactionDTO.getUpdatedAt());
+        params.addValue("transactionReference", dto.getTransactionReference())
+                .addValue("walletAccountId", dto.getWalletAccountId())
+                .addValue("amount", dto.getAmount())
+                .addValue("currency", dto.getCurrency())
+                .addValue("transactionType", dto.getTransactionType().name())
+                .addValue("method", dto.getMethod())
+                .addValue("accountType", dto.getAccountType().name())
+                .addValue("description", dto.getDescription())
+                .addValue("createdAt", dto.getCreatedAt())
+                .addValue("updatedAt", dto.getUpdatedAt());
 
         Integer id = jdbc.update(sql, params, new GeneratedKeyHolder());
-        log.info(String.format("Wallet Credit Transaction created. id: %s, transactionReference:%s", id, transactionDTO.getTransactionReference()));
+        log.info(String.format("Wallet Credit Transaction created. id: %s, transactionReference:%s", id, dto.getTransactionReference()));
         return id.longValue();
 
     }

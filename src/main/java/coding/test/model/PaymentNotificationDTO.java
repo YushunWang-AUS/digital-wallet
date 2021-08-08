@@ -4,13 +4,13 @@ import javax.validation.Valid;
 
 public class PaymentNotificationDTO {
 
-    @Valid private WalletCreditTransactionDTO transactions;
+    @Valid private TransactionDTO transactions;
 
-    public WalletCreditTransactionDTO getTransactions() {
+    public TransactionDTO getTransactions() {
         return transactions;
     }
 
-    public void setTransactions(WalletCreditTransactionDTO transactions) {
+    public void setTransactions(TransactionDTO transactions) {
         this.transactions = transactions;
     }
 }

@@ -59,7 +59,7 @@ public class NotificationTest {
     @Test
     public void test20001() throws Exception {
         PaymentNotificationTestDTO dto = new PaymentNotificationTestDTO();
-//        dto.transactions.user_id = null;
+        dto.transactions.user_id = null;
         String reqBody = new ObjectMapper().writeValueAsString(dto);
         MvcResult result = performTest(reqBody);
 
