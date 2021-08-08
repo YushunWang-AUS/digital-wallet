@@ -1,6 +1,5 @@
 package coding.test.model;
 
-import coding.test.annotation.ValueOfEnum;
 import coding.test.enums.AccountType;
 import coding.test.enums.TransactionType;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
@@ -27,7 +26,7 @@ public class WalletCreditTransactionDTO {
     @JsonProperty(value = "id")
     private String transactionReference;
 
-    @NotEmpty
+    @NotBlank
     @JsonProperty(value = "user_id")
     private String userReference;
 

@@ -1,8 +1,10 @@
 package coding.test.model;
 
+import javax.validation.Valid;
+
 public class PaymentNotificationDTO {
 
-    private WalletCreditTransactionDTO transactions;
+    @Valid private WalletCreditTransactionDTO transactions;
 
     public WalletCreditTransactionDTO getTransactions() {
         return transactions;

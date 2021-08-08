@@ -47,12 +47,11 @@ public class LoggingService {
 
     public void logResponse(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object body) {
         try {
-            ResponseFacade response = (ResponseFacade) httpServletResponse;
             StringBuilder stringBuilder = new StringBuilder();
 
             stringBuilder.append("\n" + SEPARATOR);
             stringBuilder.append("\nRESPONSE ");
-            stringBuilder.append("status=[").append(response.getStatus()).append("] ");
+            stringBuilder.append("status=[").append(httpServletResponse.getStatus()).append("] ");
             stringBuilder.append("method=[").append(httpServletRequest.getMethod()).append("] ");
             stringBuilder.append("path=[").append(httpServletRequest.getRequestURI()).append("] ");
             stringBuilder.append("\nresponseHeaders=[").append(buildHeadersMap(httpServletResponse)).append("] ");
