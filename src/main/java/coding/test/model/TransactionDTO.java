@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -22,9 +23,11 @@ public class TransactionDTO {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @NotBlank
+    @Size(min = 1, max = 128)
     private String id;
 
     @NotBlank
+    @Size(min = 1, max = 128)
     private String user_id;
 
     @NotNull
@@ -44,10 +47,13 @@ public class TransactionDTO {
     private TransactionType type;
 
     @NotBlank
+    @Size(min = 1, max = 32)
     private String type_method;
 
     private AccountType debit_credit;
 
+    @NotBlank
+    @Size(min = 1, max = 16)
     private String currency;
 
     @NotNull

@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -18,12 +19,18 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-//@Sql(['../../datasets/sql/cleanDB.sql'])
+@Sql(value = {"../../../../cleanDB.sql", "../../../../init_data.sql"})
 @AutoConfigureMockMvc
 @SpringBootTest
 public class NotificationTest {
+
+    /*TODO: 1. each API field null,EMPTY,BLANK value check
+            2. each API field min/max/over-max length check
+            3. date/email format check
+            4. enum field value check (type, debit_credit)
+            5. user doesn't exist check
+    */
 
     private final static String ENDPOINT = "/payment/notification";
 
@@ -55,7 +62,7 @@ public class NotificationTest {
         assertEquals("Required request body is missing: public coding.test.model.FpResponseDTO coding.test.controller.PaymentController.paymentNotification(coding.test.model.PaymentNotificationDTO)", ((Map) ((List) responseDTO.getResult()).get(0)).get("message"));
     }
 
-    @DisplayName("test01")
+    @DisplayName("user_id: null")
     @Test
     public void test20001() throws Exception {
         PaymentNotificationTestDTO dto = new PaymentNotificationTestDTO();
@@ -66,9 +73,98 @@ public class NotificationTest {
         MockHttpServletResponse response = result.getResponse();
         String body = result.getResponse().getContentAsString();
         FpResponseDTO responseDTO = mapper.readValue(body, FpResponseDTO.class);
+        assertEquals(400, response.getStatus());
+        assertEquals(false, responseDTO.getSuccess());
+        assertEquals("transactions.user_id.invalid", ((Map) ((List) responseDTO.getResult()).get(0)).get("code"));
+        assertEquals("transactions.user_id must not be blank", ((Map) ((List) responseDTO.getResult()).get(0)).get("message"));
+    }
+
+    @DisplayName("user_id: EMPTY")
+    @Test
+    public void test20002() throws Exception {
+        PaymentNotificationTestDTO dto = new PaymentNotificationTestDTO();
+        dto.transactions.user_id = "";
+        String reqBody = new ObjectMapper().writeValueAsString(dto);
+        MvcResult result = performTest(reqBody);
+
+        MockHttpServletResponse response = result.getResponse();
+        String body = result.getResponse().getContentAsString();
+        FpResponseDTO responseDTO = mapper.readValue(body, FpResponseDTO.class);
+        assertEquals(400, response.getStatus());
+        assertEquals(false, responseDTO.getSuccess());
+        assertEquals("transactions.user_id.invalid", ((Map) ((List) responseDTO.getResult()).get(0)).get("code"));
+        assertEquals("transactions.user_id must not be blank", ((Map) ((List) responseDTO.getResult()).get(0)).get("message"));
+    }
+
+    @DisplayName("user_id: BLANK")
+    @Test
+    public void test20003() throws Exception {
+        PaymentNotificationTestDTO dto = new PaymentNotificationTestDTO();
+        dto.transactions.user_id = " ";
+        String reqBody = new ObjectMapper().writeValueAsString(dto);
+        MvcResult result = performTest(reqBody);
+
+        MockHttpServletResponse response = result.getResponse();
+        String body = result.getResponse().getContentAsString();
+        FpResponseDTO responseDTO = mapper.readValue(body, FpResponseDTO.class);
+        assertEquals(400, response.getStatus());
+        assertEquals(false, responseDTO.getSuccess());
+        assertEquals("transactions.user_id.invalid", ((Map) ((List) responseDTO.getResult()).get(0)).get("code"));
+        assertEquals("transactions.user_id must not be blank", ((Map) ((List) responseDTO.getResult()).get(0)).get("message"));
+    }
+
+    @DisplayName("1.create wallet account. 2.create transaction, 3.create 2nd transaction")
+    @Test
+    public void test30001() throws Exception {
+        PaymentNotificationTestDTO dto = new PaymentNotificationTestDTO();
+        String reqBody = new ObjectMapper().writeValueAsString(dto);
+        MvcResult result = performTest(reqBody);
+
+        // create transaction
+        MockHttpServletResponse response = result.getResponse();
+        String body = result.getResponse().getContentAsString();
+        FpResponseDTO responseDTO = mapper.readValue(body, FpResponseDTO.class);
+        assertEquals(200, response.getStatus());
+        assertEquals(true, responseDTO.getSuccess());
+
+        // create 2nd transaction
+        PaymentNotificationTestDTO dto2 = new PaymentNotificationTestDTO();
+        dto2.transactions.id = "xxxx-1111";
+        dto2.transactions.amount = "50.00";
+        dto2.transactions.debit_credit = "DEBIT";
+        reqBody = new ObjectMapper().writeValueAsString(dto2);
+        result = performTest(reqBody);
+
+        response = result.getResponse();
+        body = result.getResponse().getContentAsString();
+        responseDTO = mapper.readValue(body, FpResponseDTO.class);
+        assertEquals(200, response.getStatus());
+        assertEquals(true, responseDTO.getSuccess());
+    }
+
+    @DisplayName("Duplicated transaction")
+    @Test
+    public void test90001() throws Exception {
+        PaymentNotificationTestDTO dto = new PaymentNotificationTestDTO();
+        String reqBody = new ObjectMapper().writeValueAsString(dto);
+        MvcResult result = performTest(reqBody);
+
+        // create transaction
+        MockHttpServletResponse response = result.getResponse();
+        String body = result.getResponse().getContentAsString();
+        FpResponseDTO responseDTO = mapper.readValue(body, FpResponseDTO.class);
+        assertEquals(200, response.getStatus());
+        assertEquals(true, responseDTO.getSuccess());
+
+        // create same transaction
+        result = performTest(reqBody);
+        response = result.getResponse();
+        body = result.getResponse().getContentAsString();
+        responseDTO = mapper.readValue(body, FpResponseDTO.class);
         assertEquals(200, response.getStatus());
         assertEquals(false, responseDTO.getSuccess());
         assertEquals("internal.error", ((Map) ((List) responseDTO.getResult()).get(0)).get("code"));
-        assertEquals("Required request body is missing: public coding.test.model.FpResponseDTO coding.test.controller.PaymentController.paymentNotification(coding.test.model.PaymentNotificationDTO)", ((Map) ((List) responseDTO.getResult()).get(0)).get("message"));
+        assertEquals("Transaction [49f1cb10-0202-0138-225b-028e897a70a1] already exists.", ((Map) ((List) responseDTO.getResult()).get(0)).get("message"));
+
     }
 }
